@@ -1,0 +1,273 @@
+snippet lib
+	library(${1:package})
+
+snippet req
+	require(${1:package})
+
+snippet src
+	source("${1:file.R}")
+
+snippet ret
+	return(${1:code})
+
+snippet mat
+	matrix(${1:data}, nrow = ${2:rows}, ncol = ${3:cols})
+
+snippet sg
+	setGeneric("${1:generic}", function(${2:x, ...}) {
+		standardGeneric("${1:generic}")
+	})
+
+snippet sm
+	setMethod("${1:generic}", ${2:class}, function(${2:x, ...}) {
+		${0}
+	})
+
+snippet sc
+	setClass("${1:Class}", slots = c(${2:name = "type"}))
+
+snippet if
+	if (${1:condition}) {
+		${0}
+	}
+
+snippet el
+	else {
+		${0}
+	}
+
+snippet ei
+	else if (${1:condition}) {
+		${0}
+	}
+
+snippet fun
+	${1:name} <- function(${2:variables}) {
+		${0}
+	}
+
+snippet for
+	for (${1:variable} in ${2:vector}) {
+		${0}
+	}
+
+snippet while
+	while (${1:condition}) {
+		${0}
+	}
+
+snippet switch
+	switch (${1:object},
+		${2:case} = ${3:action}
+	)
+
+snippet apply
+	apply(${1:array}, ${2:margin}, ${3:...})
+
+snippet lapply
+	lapply(${1:list}, ${2:function})
+
+snippet sapply
+	sapply(${1:list}, ${2:function})
+
+snippet mapply
+	mapply(${1:function}, ${2:...})
+
+snippet tapply
+	tapply(${1:vector}, ${2:index}, ${3:function})
+
+snippet vapply
+	vapply(${1:list}, ${2:function}, FUN.VALUE = ${3:type}, ${4:...})
+
+snippet rapply
+	rapply(${1:list}, ${2:function})
+
+snippet ts
+	`r paste("#", date(), "------------------------------\n")`
+	
+
+#================================================================
+
+snippet my.Utilities Pad out unequal length cols in list to data.frame
+	Lst = ListToDataframe
+	sapply(Lst,'[',seq(max(sapply(Lst,length))))
+
+# Package Development 
+snippet my.PckDev.Tips_ifPackageNotAvail 
+	eg1 
+	wants <- c("DescTools")
+	has   <- wants %in% rownames(installed.packages())
+	if(any(!has)) install.packages(wants[!has])
+
+	eg2 
+	if (!require("DT")) install.packages('DT')
+	devtools::session_info('DT')
+
+#---
+
+snippet my.DB__FTReporting
+	library(RODBC);
+	sql= "
+	
+	"
+	fto = odbcConnect("ODBC64_FTrack_2016",uid="GRMS",pwd="Password1");
+	sql2 = gsub(sql,pattern = '\t|\n',replacement = ' ',ignore.case = TRUE );
+	df = sqlQuery(fto,sql2 , stringsAsFactors=FALSE)
+	
+snippet my.DB__Read SQL to Console
+	qry <- readLines('c:/delete_me/x.sql') ; qry 
+	format(data.frame(qry),justify = "left")
+
+snippet my.DB__lf_lf_Tbl
+	lf_Tbl
+snippet my.DB__lf_lf_View
+	lf_View
+snippet my.DB__lf_ColName
+	lf_ColName
+snippet my.DB__lf_lf_View
+	lf_View
+snippet my.DB__lf_lf_StoredProcs
+	lf_StoredProcs 
+
+snippet my.DB_CREATE PROCEDURE s
+	# CREATE PROCEDURE s
+	CREATE PROCEDURE s (@TableName Varchar(Max)) AS 
+	Begin
+	Begin Try
+	DECLARE @Query Varchar(500)
+	SET @Query = 'Select top 100 * From ' + @TableName
+	EXEC (@Query)
+	END TRY 
+
+	BEGIN CATCH
+	SELECT ERROR_MESSAGE() 
+	END CATCH
+	END 
+snippet my.DB_CREATE PROCEDURE sc
+	#CREATE PROCEDURE sc
+	CREATE PROCEDURE sc (@TableName Varchar(Max), @TableColName  Varchar(Max))  AS
+	Begin 
+	Begin Try 
+	DECLARE @Query Varchar(500) 
+	SET @Query = 'Select distinct top 100 ' + @TableColName  + ' From ' + @TableName 
+	EXEC (@Query)
+	END TRY 
+
+	BEGIN CATCH
+	SELECT 	ERROR_MESSAGE() 
+	END CATCH
+	END
+snippet my.DB_CREATE PROCEDURE lf_Tbl
+	#CREATE procedure lf_Tbl
+	#Query to fetch the list of table that match a pattern
+	CREATE procedure lf_Tbl (@LookFor varchar(100)) as 
+	begin 
+	select * from information_schema.tables where upper(table_name) like upper('%'+ @LookFor +'%') 
+	order by TABLE_NAME
+	end 
+snippet my.DB_CREATE PROCEDURE lf_View
+	#CREATE procedure lf_View
+	#Query to fetch the list of table that match a pattern
+	CREATE procedure lf_View (@LookFor varchar(100)) as 
+	begin 
+	select * from information_schema.VIEWS where upper(table_name) like upper('%'+ @LookFor +'%')
+	order by TABLE_NAME
+	end 
+snippet my.DB_CREATE PROCEDURE lf_ColName
+	#CREATE procedure lf_ColName
+	#Query to fetch the list of Columns (with table info) that match a pattern.
+	CREATE procedure lf_ColName  (@LookFor varchar(100)) as 
+	BEGIN
+	select * from information_schema.columns where upper(column_name) like upper('%'+ @LookFor +'%')
+	end 
+snippet my.DB_CREATE PROCEDURE lf_StoredProcs
+	#CREATE procedure lf_StoredProcs
+	#Query to fetch the list of Stored Procedures that match a pattern.
+	CREATE procedure lf_StoredProcs (@LookFor varchar(100)) as 
+	Begin
+	select ROUTINE_SCHEMA, ROUTINE_NAME, ROUTINE_DEFINITION from INFORMATION_SCHEMA.ROUTINES
+	where ROUTINE_TYPE='PROCEDURE' and routine_name like upper('%'+ @LookFor +'%')
+	end 
+	
+#---
+snippet my.CopyPaste_ClipBoardReadFrom
+	dfx = read.table("clipboard",sep="\t",header=TRUE,stringsAsFactors=FALSE)
+	tibble::as_tibble(dfx)
+
+	str(dfx)
+	summary(dfx)
+	
+snippet my.CopyPaste_ClipBoardReadFrom_ConvertDates_d/m/Y	
+	dateFormats ="%d/%m/%Y"
+	dfx = read.table("clipboard",sep="\t",header=TRUE,stringsAsFactors=FALSE)
+	DatesNames = names(dfx[sapply(dfx, function(x) !all(is.na(as.Date(as.character(x),format=dateFormats))))])
+	lapply(dfx[,DatesNames,drop=FALSE],as.Date,"%d/%m/%Y")
+	dfx[,DatesNames]=lapply(dfx[,DatesNames,drop=FALSE],as.Date,format=dateFormats)
+	
+	NumericCols = names(dfx[sapply(dfx, function(x) !all(is.na(as.numeric(x))))])
+	lapply(dfx[,NumericCols,drop=FALSE],as.numeric)
+	dfx[,NumericCols]=lapply(dfx[,NumericCols,drop=FALSE],as.numeric)
+	
+	tibble::as_tibble(dfx)
+
+	str(dfx)
+	summary(dfx)
+
+snippet my.CopyPaste_ClipBoardWriteTo
+	write.table(dfx,"clipboard",sep="\t",row.names=FALSE,col.names = TRUE)
+
+
+snippet my.keyfiles_R_DailyEssentials
+	H:\___My_Folders\0000 R Scripts\000 DailyEssentials 
+	C:\Users\tlukacevic\Documents\.R\snippets\r.snippets
+	
+	http://www.brodrigues.co/functional_programming_and_unit_testing_for_data_munging/
+	
+snippet my.EDA_Find.This.Searched.Term.In.Columns
+	#Find.This.Searched.Term.In.Columns
+	lst = df
+	Lk  = 'Look for this in all columns'
+	Fnd=lapply( lst,function(x) x[grep(pattern = Lk,perl = FALSE,x[],ignore.case = TRUE)]);lapply(Fnd, unique) ->Fnd;Fnd[ sapply(Fnd, length) > 0 ]->Fnd.this.list_x
+	Fnd.this.list_x
+	sapply(Fnd.this.list_x,'[',seq(max(sapply(Fnd.this.list_x,length))))[,]
+
+snippet my.EDA_Find.All.Uniq.Values.DBase.Columns
+	#Find.All.Uniq.Values.DBase.Columns
+	lst = df
+	lstMax = 1000
+	lst[sapply(lst,is.factor)]=sapply(lst[sapply(lst,is.factor)],as.character);lapply(lapply(lst,unique),head,lstMax)->Fnd.uniq.values.in.Columns
+	Fnd.uniq.values.in.Columns
+	sapply(Fnd.uniq.values.in.Columns,'[',seq(max(sapply(Fnd.uniq.values.in.Columns,length))))[,]
+
+snippet my.DisplayUtil_scientificNotation_getRid
+	options(scipen=999)
+
+snippet my.XL.dataInterChange
+	library(DescTools);library(RDCOMClient)
+	
+	#Read in one or many blocks of Excel cells, just select blocks of Excel cells run this function and they will be loaded to df
+	df=DescTools::XLGetRange(header = TRUE)
+	
+	#Write a semi-colon delimited data block in R to Excel
+	DescTools::XLView(df)
+
+snippet my.ggplot2 seven_layers_grammar_of_graphics
+	ggplot(data = <DATA>) + 
+	<GEOM_FUNCTION>(
+									mapping = aes(<MAPPINGS>),
+									stat = <STAT>, 
+									position = <POSITION>
+	) +
+	<COORDINATE_FUNCTION> +
+	<FACET_FUNCTION>
+
+snippet my.ggplot2 key attributes
+	#Rotate Y axis 90 degrees
+	theme(axis.text.x = element_text(angle=90,size = 7)) +
+	
+	#Finer date range on X axis
+	scale_x_date(date_breaks = 'week', date_minor_breaks = 'day')
+	#free scales on x and y axis
+	facet_wrap(~variable,ncol=1, scales='free_y')
+
+#---
