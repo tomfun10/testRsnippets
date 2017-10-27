@@ -268,6 +268,10 @@ snippet my.ggplot2 key attributes
 	#Finer date range on X axis
 	scale_x_date(date_breaks = 'week', date_minor_breaks = 'day')
 	#free scales on x and y axis
-	facet_wrap(~variable,ncol=1, scales='free_y')
+	facet_wrap(~variable,ncol=1, scales='free_y') 
+	
+snippet my.load_library_or_install_it 
+	if (!require(package)) install.packages('package') 
+	library(package)		
 
 #---
